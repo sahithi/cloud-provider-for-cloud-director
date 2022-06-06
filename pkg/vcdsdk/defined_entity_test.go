@@ -145,11 +145,12 @@ func TestCRUDOnErrorSet(t *testing.T) {
 		AdditionalDetails: nil,
 	}
 	CloudInitError1 := BackendError{
-		Name:              "CloudInitError",
-		OccurredAt:        time.Now(),
-		VcdResourceId:     "vm1Id",
-		AdditionalDetails: nil,
+		Name:            "CloudInitError",
+		OccurredAt:      time.Now(),
+		VcdResourceId:   "vm1Id",
+		VcdResourceName: "",
 	}
+	CloudInitError1.AdditionalDetails = map[string]interface{}{"event": "haha"}
 
 	// add few errors to rde.status.capvcd.errorSet
 	err = rdeManager.AddToErrorSet(ctx, "capvcd", CloudInitError, 8)
@@ -171,11 +172,11 @@ func TestCRUDOnErrorSet(t *testing.T) {
 	assert.Equal(t, 5, len(errorSet), "Length of error set must match with error additions requested")
 
 	// remove few errors from rde.status.capvcd.errorSet
-	err = rdeManager.RemoveErrorByNameOrIdFromErrorSet(ctx, "capvcd", "LoadBalancerError", "")
+	err = rdeManager.RemoveErrorByNameOrIdFromErrorSet(ctx, "capvcd", "LoadBalancerError", "", "")
 	assert.NoError(t, err, "failed to remove error from the errorset")
-	err = rdeManager.RemoveErrorByNameOrIdFromErrorSet(ctx, "capvcd", "CloudInitError", "")
+	err = rdeManager.RemoveErrorByNameOrIdFromErrorSet(ctx, "capvcd", "CloudInitError", "", "")
 	assert.NoError(t, err, "failed to remove error from the errorset")
-	err = rdeManager.RemoveErrorByNameOrIdFromErrorSet(ctx, "capvcd", "ControlPlaneError", "")
+	err = rdeManager.RemoveErrorByNameOrIdFromErrorSet(ctx, "capvcd", "ControlPlaneError", "", "")
 	assert.NoError(t, err, "failed to remove error from the errorset")
 
 	// get the rde and check if the length of the errorSet after removing errors is same as expected
